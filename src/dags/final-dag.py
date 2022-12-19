@@ -39,11 +39,35 @@ with DAG(
         default_args=args,
         catchup=True,
         schedule_interval='0 0 * * *',
-        start_date=dt.datetime(2022, 10, 24),
-        end_date=dt.datetime(2022, 10, 24) + dt.timedelta(days=7)
+        start_date=dt.datetime(2022, 10, 1),
+        end_date=dt.datetime(2022, 11, 1)
 ) as dag:
 
     begin = EmptyOperator(task_id=f"begin")
+
+    with TaskGroup(group_id='Migrations') as create_migrations:
+        for table in ("transactions", "currencies"):
+            create_tables = PythonOperator(
+                task_id=f'create_tables_stg_{table}',
+                python_callable=config.stg_repository()._execute,
+                op_kwargs={
+                    'sql_file_path': os.path.join(config.DAG_DIR, f'sql/stg/{table}.sql')
+                },
+                dag=dag
+            )
+
+        for table in ("global_metrics",):
+            create_tables = PythonOperator(
+                task_id=f'create_tables_dwh_{table}',
+                python_callable=config.stg_repository()._execute,
+                op_kwargs={
+                    'sql_file_path': os.path.join(config.DAG_DIR, f'sql/cdm/{table}.sql')
+                },
+                dag=dag
+            )
+
+    is_all_migrations_done = EmptyOperator(task_id=f"is_all_migrations_done",
+                                        trigger_rule=TriggerRule.ALL_SUCCESS)
 
     with TaskGroup(group_id='FROM_SOURCE') as load_to_local_files:
         for table in ("public.transactions", "public.currencies"):
@@ -82,7 +106,7 @@ with DAG(
 
     end = EmptyOperator(task_id=f"end")
 
-    begin >> load_to_local_files >> is_all_files_loaded >> end
+    begin >> create_migrations >> is_all_migrations_done >> load_to_local_files >> is_all_files_loaded >> load_to_stg >> end
 
 
 if __name__ == '__main__':

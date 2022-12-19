@@ -29,7 +29,7 @@ class AppConfig(object):
         self.vertica_warehouse_autocommit = bool(int(os.getenv('VERTICA_WAREHOUSE_AUTOCOMMIT')))
 
         self.STAGE_DIR = os.getenv('STG_DIR') or "."
-        self.DAG_DIR = "/lessons/dags"
+        self.DAG_DIR = "/lessons/dags/final-dag"
         self.BUSINESS_DT = '{{ ds }}'
 
         if re.match(self.BUSINESS_DT, "\d\d\d\d-\d\d-\d\d"):

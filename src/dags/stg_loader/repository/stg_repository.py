@@ -34,16 +34,11 @@ class StgRepository:
             )
 
     def _copy(self, layer: str, table: str, file_path: str):
-        if not self._test_row_exists(layer=layer, table=table):
-            with self._db.connection() as conn:
-                curs = conn.cursor()
-                curs.execute(f"""
-                                    COPY {layer}.{table}
-                                    FROM LOCAL '{file_path}'
-                                    DELIMITER ','
-                                    """)
-        else:
-            self.logger.debug(f"Table: {layer}.{table} is not empty!")
+        with self._db.connection() as conn:
+            curs = conn.cursor()
+            curs.execute(f"""COPY {layer}.{table}
+                             FROM LOCAL '{file_path}'
+                             DELIMITER ','""")
 
     
     def _execute(self, sql_file_path: str):
