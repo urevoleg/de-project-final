@@ -68,5 +68,5 @@ class AppConfig(object):
             self.vertica_warehouse_db()
         )
 
-    def print_date(self):
-        print(f"BUSINESS DT: {self.BUSINESS_DT}")
+    def print_date(self, date):
+        print(f"BUSINESS DT: {self.BUSINESS_DT}, date: {date}")
