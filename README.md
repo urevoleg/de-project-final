@@ -44,6 +44,7 @@ _1. Backend  мобильного приложения, PostgreSQL. Таблиц
 
 --------------------------------------------------
 ![](http://risovach.ru/upload/2017/04/mem/gendalf_143791524_orig_.jpg)
+
 **pps:** из коробки Metabase не умеет ходить в Vertica, для изобретения ходулей использовались:
 - [Инструкция с офф сайта metabase](https://www.metabase.com/docs/latest/databases/connections/vertica#adding-the-vertica-jdbc-driver-jar-to-the-metabase-plugins-directory)
 - [Драйвер скачен отсюда](https://dbschema.com/jdbc-driver/Vertica.html)
